@@ -27,6 +27,12 @@ setup() {
   [[ $output =~ changed=0.*unreachable=0.*failed=0 ]]
 }
 
+@test "Role with prefs can be applied to container" {
+  ansible-playbook -i $hosts ${BATS_TEST_DIRNAME}/test-prefs.yml
+  prefs=$(container_exec $container cat "~/.mozilla/firefox/*.default/user.js")
+  [[ $prefs == 'user_pref("some.string.pref", "some-string-pref-value");' ]]
+}
+
 teardown() {
   container_cleanup
   rm -rf ${BATS_TEST_DIRNAME}/roles
